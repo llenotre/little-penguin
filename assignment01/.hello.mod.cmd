@@ -1,1 +1,0 @@
-cmd_/home/llenotre/Desktop/dev/little-penguin/assignment01/hello.mod := { echo  /home/llenotre/Desktop/dev/little-penguin/assignment01/hello.o; echo; } > /home/llenotre/Desktop/dev/little-penguin/assignment01/hello.mod

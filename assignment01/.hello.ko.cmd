@@ -1,1 +1,0 @@
-cmd_/home/llenotre/Desktop/dev/little-penguin/assignment01/hello.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /home/llenotre/Desktop/dev/little-penguin/assignment01/hello.ko /home/llenotre/Desktop/dev/little-penguin/assignment01/hello.o /home/llenotre/Desktop/dev/little-penguin/assignment01/hello.mod.o;  true

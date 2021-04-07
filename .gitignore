@@ -5,3 +5,10 @@
 *.o
 Module.symvers
 modules.order
+
+.*.c.swp
+.*.ko.cmd
+.*.mod.cmd
+.*.mod.o.cmd
+.*.o.cmd
+.modules.order.cmd
