@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /*
  * Implementation of a very simple Hello World! Linux kernel module.
  */
@@ -6,19 +8,20 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
+MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Luc Lenôtre");
 MODULE_DESCRIPTION("Yet another hello world module");
 MODULE_VERSION("0.1");
 
-static int hello_init(void)
+static int __init hello_init(void)
 {
-	printk("Hello world!");
+	pr_info("Hello world!");
 	return 0;
 }
 
-static void hello_exit(void)
+static void __exit hello_exit(void)
 {
-	printk("Cleaning up module.");
+	pr_info("Cleaning up module.");
 }
 
 module_init(hello_init);

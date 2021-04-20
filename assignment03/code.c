@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
@@ -10,7 +11,7 @@ int do_work(int *my_int)
 	int z;
 
 	for (x = 0; x < my_int; ++x)
-		udelay(10);
+		usleep_range(10, 11);
 
 	if (y < 10) {
 		/*

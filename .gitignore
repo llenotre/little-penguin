@@ -11,4 +11,5 @@ modules.order
 .*.mod.cmd
 .*.mod.o.cmd
 .*.o.cmd
+.Module.symvers.cmd
 .modules.order.cmd
