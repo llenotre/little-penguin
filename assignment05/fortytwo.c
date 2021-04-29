@@ -38,23 +38,23 @@ static struct file_operations fops = {
 	.write = fortytwo_write,
 };
 
-int major;
-struct class* class = NULL;
-struct device *dev = NULL;
+static int major;
+static struct class* class = NULL;
+static struct device *dev = NULL;
 
 static int __init fortytwo_init(void)
 {
 	printk(KERN_INFO "Hello world!\n");
 	major = register_chrdev(0, DEVICE_NAME, &fops);
 	if (major < 0) {
-		// TODO
+		printk(KERN_ERR "Failed to init fortytwo module!");
 		return -1;
 	}
 
 	class = class_create(THIS_MODULE, CLASS_NAME);
 	if (IS_ERR(class)) {
 		unregister_chrdev(major, DEVICE_NAME);
-		// TODO
+		printk(KERN_ERR "Failed to init fortytwo module!");
 		return -1;
 	}
 
@@ -62,7 +62,7 @@ static int __init fortytwo_init(void)
 	if (IS_ERR(dev)) {
 		class_destroy(class);
 		unregister_chrdev(major, DEVICE_NAME);
-		// TODO
+		printk(KERN_ERR "Failed to init fortytwo module!");
 		return -1;
 	}
 	return 0;
