@@ -25,7 +25,7 @@ static ssize_t id_read(struct file *filep, char __user *buffer, size_t len, loff
 	return l;
 }
 
-static ssize_t id_write(struct file *filep, const char *buffer, size_t len, loff_t *off)
+static ssize_t id_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
 	size_t l;
 
@@ -47,7 +47,7 @@ static ssize_t jiffies_read(struct file *filep, char __user *buffer, size_t len,
 	return snprintf(buffer, len, "%lu", j);
 }
 
-static ssize_t jiffies_write(struct file *filep, const char *buffer, size_t len, loff_t *off)
+static ssize_t jiffies_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
 	return 0;
 }
@@ -70,7 +70,7 @@ static ssize_t foo_read(struct file *filep, char __user *buffer, size_t len, lof
 	return 0;
 }
 
-static ssize_t foo_write(struct file *filep, const char *buffer, size_t len, loff_t *off)
+static ssize_t foo_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
 	size_t l = min(len, PAGE_SIZE);
 

@@ -22,7 +22,7 @@ static ssize_t fortytwo_read(struct file *filep, char __user *buffer, size_t len
 	return l;
 }
 
-static ssize_t fortytwo_write(struct file *filep, const char *buffer, size_t len, loff_t *off)
+static ssize_t fortytwo_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
 	size_t l;
 
