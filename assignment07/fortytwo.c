@@ -9,9 +9,6 @@
 #include <linux/module.h>
 #include <linux/mutex.h>
 
-#define DEVICE_NAME "fortytwo"
-#define CLASS_NAME "ft"
-
 MODULE_LICENSE("GPL");
 
 static const char *my_login = "llenotre";
