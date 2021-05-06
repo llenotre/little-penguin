@@ -1,1 +1,5 @@
-,ACTION=="add",SUBSYSTEM=="usb"
+ACTION=="add", \
+	SUBSYSTEM=="usb", \
+	ATTRS{bInterfaceSubClass}=="01", \
+	ATTRS{bInterfaceClass}=="03", \
+	RUN+="/usr/sbin/insmod /kbd.ko"

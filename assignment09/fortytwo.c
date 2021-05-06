@@ -52,7 +52,11 @@ static char *get_mounts_str(size_t *len)
 		if (!buff)
 			return NULL;
 
-		// TODO Get mnt_mountpoint (dentry), get its full path and write it
+		char path[PAGE_SIZE];
+		dentry_path_raw(mnt->mnt_mountpoint, &path, PAGE_SIZE);
+		buf_push(&buff, *len, path);
+		if (!buff)
+			return NULL;
 
 		buf_push(&buff, *len, "\n");
 		if (!buff)
