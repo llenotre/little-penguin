@@ -130,23 +130,21 @@ end:
 
 static ssize_t mounts_read(struct file *filep, char __user *buffer, size_t len, loff_t *off)
 {
-	size_t l;
 	char *str;
+	ssize_t l;
 
 	str = get_mounts_str(&l);
 	if (!str)
 		return -ENOMEM;
 
-	l = min(len, l);
-	memcpy(buffer, str, l);
-
+	l = simple_read_from_buffer(buffer, len, off, str, l);
 	kfree(str);
 	return l;
 }
 
 static ssize_t mounts_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
-	return 0;
+	return len;
 }
 
 static struct proc_ops mounts_fops = {
