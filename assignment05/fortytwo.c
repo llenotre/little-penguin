@@ -15,22 +15,19 @@ static const char *my_login = "llenotre";
 
 static ssize_t fortytwo_read(struct file *filep, char __user *buffer, size_t len, loff_t *off)
 {
-	size_t l;
-
-	l = min(len, strlen(my_login));
-	memcpy(buffer, my_login, l);
-	return l;
+	return simple_read_from_buffer(buffer, len, off, my_login, strlen(my_login));
 }
 
 static ssize_t fortytwo_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
-	size_t l;
+	char tmp[9];
+	ssize_t l;
 
-	l = strlen(my_login);
-	if (len != l || memcmp(buffer, my_login, len) != 0)
-		return -EINVAL;
-	else
+	l = simple_write_to_buffer(tmp, sizeof(tmp), off, buffer, len);
+	if (l == strlen(my_login) && memcmp(tmp, my_login, l) == 0)
 		return len;
+	else
+		return -EINVAL;
 }
 
 static struct file_operations fops = {
@@ -71,7 +68,7 @@ static int __init fortytwo_init(void)
 static void __exit fortytwo_exit(void)
 {
 	printk(KERN_INFO "Cleaning up module.\n");
-	device_destroy(class, MKDEV(major, 0));
+	device_destroy(class, dev->devt);
 	class_destroy(class);
 	unregister_chrdev(major, DEVICE_NAME);
 }
