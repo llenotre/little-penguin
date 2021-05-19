@@ -15,22 +15,19 @@ static const char *my_login = "llenotre";
 
 static ssize_t id_read(struct file *filep, char __user *buffer, size_t len, loff_t *off)
 {
-	size_t l;
-
-	l = min(len, strlen(my_login));
-	memcpy(buffer, my_login, l);
-	return l;
+	return simple_read_from_buffer(buffer, len, off, my_login, strlen(my_login));
 }
 
 static ssize_t id_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
-	size_t l;
+	char tmp[9];
+	ssize_t l;
 
-	l = strlen(my_login);
-	if (len != l || memcmp(buffer, my_login, len) != 0)
-		return -EINVAL;
-	else
+	l = simple_write_to_buffer(tmp, sizeof(tmp), off, buffer, len);
+	if (l == strlen(my_login) && memcmp(tmp, my_login, l) == 0)
 		return len;
+	else
+		return -EINVAL;
 }
 
 static struct file_operations id_fops = {
@@ -41,12 +38,16 @@ static struct file_operations id_fops = {
 static ssize_t jiffies_read(struct file *filep, char __user *buffer, size_t len, loff_t *off)
 {
 	volatile unsigned long j = jiffies;
-	return snprintf(buffer, len, "%lu", j);
+	char tmp[64];
+	ssize_t l;
+
+	l = snprintf(tmp, sizeof(tmp), "%lu", j);
+	return simple_read_from_buffer(buffer, len, off, tmp, l);
 }
 
 static ssize_t jiffies_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
-	return 0;
+	return len;
 }
 
 static struct file_operations jiffies_fops = {
@@ -56,25 +57,27 @@ static struct file_operations jiffies_fops = {
 
 DEFINE_MUTEX(foo_mutex);
 static char foo_buffer[PAGE_SIZE];
+static size_t foo_len = 0;
 
 static ssize_t foo_read(struct file *filep, char __user *buffer, size_t len, loff_t *off)
 {
-	size_t l = min(len, PAGE_SIZE);
+	ssize_t l;
 
 	mutex_lock(&foo_mutex);
-	memcpy(buffer, foo_buffer, l);
+	l = simple_read_from_buffer(buffer, len, off, foo_buffer, foo_len);
 	mutex_unlock(&foo_mutex);
-	return 0;
+	return l;
 }
 
 static ssize_t foo_write(struct file *filep, const char __user *buffer, size_t len, loff_t *off)
 {
-	size_t l = min(len, PAGE_SIZE);
+	size_t l = 0;
 
 	mutex_lock(&foo_mutex);
-	memcpy(foo_buffer, buffer, l);
+	l = simple_write_to_buffer(foo_buffer, sizeof(foo_buffer), off, buffer, len);
+	foo_len = l;
 	mutex_unlock(&foo_mutex);
-	return 0;
+	return l;
 }
 
 static struct file_operations foo_fops = {
