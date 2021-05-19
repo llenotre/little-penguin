@@ -130,8 +130,8 @@ end:
 
 static ssize_t mounts_read(struct file *filep, char __user *buffer, size_t len, loff_t *off)
 {
-	char *str;
 	ssize_t l;
+	char *str;
 
 	str = get_mounts_str(&l);
 	if (!str)
