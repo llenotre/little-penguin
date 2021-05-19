@@ -79,19 +79,20 @@ struct mnt_namespace {
 	unsigned int		pending_mounts;
 } __randomize_layout;
 
-static void buf_push(char **buf, size_t old_len, const char *str)
+static void buf_push(char **buf, size_t *old_len, const char *str)
 {
 	size_t l;
 	char *b;
 
 	l = strlen(str);
-	b = krealloc(*buf, old_len + l, GFP_KERNEL);
+	b = krealloc(*buf, *old_len + l, GFP_KERNEL);
 	if (b) {
-		memcpy(*buf + old_len, str, l);
+		memcpy(b + *old_len, str, l);
 	} else {
 		kfree(*buf);
-		*buf = NULL;
 	}
+	*buf = b;
+	*old_len += l;
 }
 
 static char *get_mounts_str(size_t *len)
@@ -99,32 +100,35 @@ static char *get_mounts_str(size_t *len)
 	struct mnt_namespace *ns = current->nsproxy->mnt_ns;
 	struct mount *mnt;
 	char *buff = NULL;
-	char *path = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	char *path = kmalloc(PATH_MAX + 1, GFP_KERNEL);
+	char *p;
 
 	if (!path)
 		goto end;
 	*len = 0;
 	list_for_each_entry(mnt, &ns->list, mnt_list) {
-		buf_push(&buff, *len, mnt->mnt_devname);
+		buf_push(&buff, len, mnt->mnt_devname);
 		if (!buff)
 			goto end;
 
-		buf_push(&buff, *len, " ");
+		buf_push(&buff, len, " ");
 		if (!buff)
 			goto end;
 
-		dentry_path_raw(mnt->mnt_mountpoint, &path[0], PAGE_SIZE);
-		buf_push(&buff, *len, path);
+		p = dentry_path_raw(mnt->mnt_mountpoint, path, PATH_MAX + 1);
+		buf_push(&buff, len, p);
 		if (!buff)
 			goto end;
 
-		buf_push(&buff, *len, "\n");
+		buf_push(&buff, len, "\n");
 		if (!buff)
 			goto end;
 	}
 
 end:
 	kfree(path);
+	if (!buff)
+		*len = 0;
 	return buff;
 }
 
