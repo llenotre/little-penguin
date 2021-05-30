@@ -95,13 +95,21 @@ static void buf_push(char **buf, size_t *old_len, const char *str)
 	*old_len += l;
 }
 
+static char *get_path(char *buff, struct mount *mnt) {
+	struct path mnt_path = {
+		.dentry = mnt->mnt.mnt_root,
+		.mnt = &mnt->mnt
+	};
+
+	return d_path(&mnt_path, buff, PATH_MAX + 1);
+}
+
 static char *get_mounts_str(size_t *len)
 {
 	struct mnt_namespace *ns = current->nsproxy->mnt_ns;
 	struct mount *mnt;
 	char *buff = NULL;
 	char *path = kmalloc(PATH_MAX + 1, GFP_KERNEL);
-	char *p;
 
 	if (!path)
 		goto end;
@@ -115,8 +123,7 @@ static char *get_mounts_str(size_t *len)
 		if (!buff)
 			goto end;
 
-		p = dentry_path_raw(mnt->mnt_mountpoint, path, PATH_MAX + 1);
-		buf_push(&buff, len, p);
+		buf_push(&buff, len, get_path(path, mnt));
 		if (!buff)
 			goto end;
 
