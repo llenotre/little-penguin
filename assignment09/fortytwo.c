@@ -67,8 +67,9 @@ struct ns_common {
 
 struct mnt_namespace {
 	struct ns_common	ns;
-	struct mount *	root;
+	struct mount *root;
 	struct list_head	list;
+	/* Namespace's spinlock */
 	spinlock_t		ns_lock;
 	struct user_namespace	*user_ns;
 	struct ucounts		*ucounts;
@@ -86,16 +87,16 @@ static void buf_push(char **buf, size_t *old_len, const char *str)
 
 	l = strlen(str);
 	b = krealloc(*buf, *old_len + l, GFP_KERNEL);
-	if (b) {
+	if (b)
 		memcpy(b + *old_len, str, l);
-	} else {
+	else
 		kfree(*buf);
-	}
 	*buf = b;
 	*old_len += l;
 }
 
-static char *get_path(char *buff, struct mount *mnt) {
+static char *get_path(char *buff, struct mount *mnt)
+{
 	struct path mnt_path = {
 		.dentry = mnt->mnt.mnt_root,
 		.mnt = &mnt->mnt
@@ -163,7 +164,7 @@ static struct proc_ops mounts_fops = {
 	.proc_write = mounts_write,
 };
 
-static struct proc_dir_entry * mounts_entry = NULL;
+static struct proc_dir_entry *mounts_entry;
 
 static void cleanup(void)
 {
